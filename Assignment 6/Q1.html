@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Registration Form</title>
+  <style>
+    .error { color: red; font-size: 0.9em; }
+    button:disabled { background: #ccc; }
+    form { max-width: 350px; margin: 40px auto; }
+    label { display: block; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <form id="registrationForm" novalidate>
+    <label>
+      Name:
+      <input type="text" id="name" required>
+      <span class="error" id="nameError"></span>
+    </label>
+    <label>
+      Email:
+      <input type="email" id="email" required>
+      <span class="error" id="emailError"></span>
+    </label>
+    <label>
+      Password:
+      <input type="password" id="password" required>
+      <span class="error" id="passwordError"></span>
+    </label>
+    <button type="submit" id="submitBtn" disabled>Submit</button>
+  </form>
+  <script>
+    const name = document.getElementById('name');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
 
+    function validate() {
+      let valid = true;
+      document.getElementById('nameError').textContent = name.value ? '' : 'Name required';
+      document.getElementById('emailError').textContent = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value) ? '' : 'Invalid email';
+      document.getElementById('passwordError').textContent = /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password.value) ? '' : 'Weak password';
+      if (!name.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value) || !/^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password.value)) valid = false;
+      submitBtn.disabled = !valid;
+    }
+
+    name.addEventListener('input', validate);
+    email.addEventListener('input', validate);
+    password.addEventListener('input', validate);
+
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Registration successful!');
+    });
+  </script>
+</body>

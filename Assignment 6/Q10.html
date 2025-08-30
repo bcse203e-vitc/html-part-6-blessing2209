@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Form Builder UI</title>
+  <style>
+    form { max-width: 400px; margin: 40px auto; }
+    label { display: block; margin-top: 15px; }
+    .error { color: red; font-size: 0.9em; }
+    .input-group { margin-bottom: 15px; }
+    #inputsContainer input { width: 90%; }
+  </style>
+</head>
+<body>
+  <form id="dynamicForm" autocomplete="off">
+    <label>
+      Select input type:
+      <select id="inputType">
+        <option value="text">Text</option>
+        <option value="email">Email</option>
+        <option value="password">Password</option>
+      </select>
+    </label>
+    <button type="button" id="addInputBtn">Add</button>
+    <div id="inputsContainer"></div>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    const inputType = document.getElementById('inputType');
+    const addInputBtn = document.getElementById('addInputBtn');
+    const inputsContainer = document.getElementById('inputsContainer');
+    const dynamicForm = document.getElementById('dynamicForm');
+
+    let inputCount = 0;
+
+    const regexMap = {
+      text: /^.{1,}$/,
+      email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      password: /^(?=.*[A-Z])(?=.*\d).{8,}$/
+    };
+
+    const placeholderMap = {
+      text: "Enter text",
+      email: "Enter email",
+      password: "Enter password (min 8 chars, 1 uppercase, 1 number)"
+    };
+
+    addInputBtn.onclick = function() {
+      inputCount++;
+      const type = inputType.value;
+      const group = document.createElement('div');
+      group.className = 'input-group';
+      group.innerHTML = `
+        <label>
+          ${type.charAt(0).toUpperCase() + type.slice(1)}:
+          <input type="${type}" name="input${inputCount}" data-type="${type}" placeholder="${placeholderMap[type]}" required>
+        </label>
+        <span class="error"></span>
+      `;
+      inputsContainer.appendChild(group);
+
+      // Add validation on input
+      const input = group.querySelector('input');
+      const errorSpan = group.querySelector('.error');
+      input.addEventListener('input', function() {
+        const regex = regexMap[type];
+        if (regex.test(input.value)) {
+          errorSpan.textContent = '';
+        } else {
+          if (type === 'text') errorSpan.textContent = 'Text required.';
+          if (type === 'email') errorSpan.textContent = 'Invalid email.';
+          if (type === 'password') errorSpan.textContent = 'Password: 8+ chars, 1 uppercase, 1 number.';
+        }
+      });
+    };
+
+    dynamicForm.addEventListener('submit', function(e) {
+      let valid = true;
+      const groups = inputsContainer.querySelectorAll('.input-group');
+      groups.forEach(group => {
+        const input = group.querySelector('input');
+        const type = input.getAttribute('data-type');
+        const regex = regexMap[type];
+        const errorSpan = group.querySelector('.error');
+        if (!regex.test(input.value)) {
+          valid = false;
+          if (type === 'text') errorSpan.textContent = 'Text required.';
+          if (type === 'email') errorSpan.textContent = 'Invalid email.';
+          if (type === 'password') errorSpan.textContent = 'Password: 8+ chars, 1 uppercase, 1 number.';
+        } else {
+          errorSpan.textContent = '';
+        }
+      });
+      if (!valid) e.preventDefault();
+    });
+  </script>

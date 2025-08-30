@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Regex Validation</title>
+  <style>
+    .message { font-size: 0.95em; margin-top: 5px; }
+    .success { color: green; }
+    .error { color: red; }
+    form { max-width: 350px; margin: 40px auto; }
+    label { display: block; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <form>
+    <label>
+      Email:
+      <input type="email" id="email" required>
+    </label>
+    <div id="emailMsg" class="message"></div>
+  </form>
+  <script>
+    const emailInput = document.getElementById('email');
+    const emailMsg = document.getElementById('emailMsg');
+    const emailRegex = /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/;
+
+    emailInput.onblur = function() {
+      if (emailInput.value === "") {
+        emailMsg.textContent = "";
+        emailMsg.className = "message";
+      } else if (emailRegex.test(emailInput.value)) {
+        emailMsg.textContent = "Valid email address!";
+        emailMsg.className = "message success";
+      } else {
+        emailMsg.textContent = "Invalid email format.";
+        emailMsg.className = "message error";
+      }
+    };
+  </script>
+</body>
